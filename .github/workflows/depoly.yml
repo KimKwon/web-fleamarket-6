@@ -1,0 +1,19 @@
+name: Deploy automation
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    name: Auto-Build and Run Production
+    runs-on: ubuntu-latest
+    steps:
+      - name: simple CD
+        uses: cross-the-world/ssh-pipeline@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          user: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            ./flea-cicd.sh
