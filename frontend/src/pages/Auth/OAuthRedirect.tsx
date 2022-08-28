@@ -7,12 +7,12 @@ function OAuthRedirect() {
   const searchParams = useSearchParams();
   const navigate = useNavigate();
   const dispatch = useContext(UserInfoDispatch);
+  const code = searchParams('code');
 
   useEffect(() => {
-    const code = searchParams('code');
-
-    if (!code) {
-      navigate('/auth/sign-in');
+    const isTransitioning = !location.pathname.includes('/auth/OAuth-redirect');
+    if (!code || isTransitioning) {
+      return;
     }
 
     (async function () {
@@ -35,9 +35,9 @@ function OAuthRedirect() {
         return;
       }
 
-      navigate('/auth/sign-up', data.user);
+      navigate('/auth/sign-up', { state: data.user });
     })();
-  }, [navigate, searchParams, dispatch]);
+  }, [navigate, dispatch, code]);
 
   return <div>OAuthRedirect</div>;
 }

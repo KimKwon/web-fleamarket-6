@@ -2,6 +2,7 @@ import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { remote } from '../lib/api';
 import memoryCache from '../lib/MemoryCache';
 import debounce from '../utils/debounce';
+import useToast from './useToast';
 
 interface LikeInfo {
   likeCount: number;
@@ -13,11 +14,12 @@ function useProductLike(
   productId: number,
   userId: number,
 ) {
+  const { warn, error } = useToast();
   const [optimisticLikeInfo, setOptimisticLikeInfo] =
     useState<LikeInfo>(initialLikeInfo);
 
   const debouncedLikeHandler = useRef(
-    debounce(async (currentIsLiked: boolean) => {
+    debounce(async (currentIsLiked: boolean, productId: number) => {
       try {
         await remote.post(`/product/${productId}/like`, {
           userId,
@@ -25,7 +27,7 @@ function useProductLike(
         });
         memoryCache.removeCacheData('products');
       } catch (e) {
-        alert('좋아요 누르기에 실패했어요.');
+        error('좋아요 누르기에 실패했어요.');
         console.error(e);
       }
     }, 500),
@@ -40,15 +42,19 @@ function useProductLike(
 
   const handleLikeProduct = (e: MouseEvent) => {
     e.stopPropagation();
+    if (!productId) {
+      error('상품 정보를 가져오는데 실패했어요.');
+      return;
+    }
     if (!userId) {
-      alert('로그인이 필요해요');
+      warn('로그인이 필요해요');
       return;
     }
 
     const likeOrDislikeProduct = debouncedLikeHandler.current;
 
     togglLikeInfo();
-    likeOrDislikeProduct(optimisticLikeInfo.isLiked);
+    likeOrDislikeProduct(optimisticLikeInfo.isLiked, productId);
   };
 
   useEffect(() => {

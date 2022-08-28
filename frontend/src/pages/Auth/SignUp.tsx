@@ -6,6 +6,7 @@ import RegionSearchContainer from '../../components/RegionSearchContainer';
 import { NICKNAME, PASSWORD } from '../../constants/validation';
 import { UserInfoDispatch } from '../../context/UserInfoContext';
 import useTextInputs from '../../hooks/useTextInputs';
+import useToast from '../../hooks/useToast';
 import { credentialRemote } from '../../lib/api';
 import { useHistoryState, useNavigate } from '../../lib/Router/hooks';
 import colors from '../../styles/colors';
@@ -18,6 +19,7 @@ function SignUp() {
   const githubUser = useHistoryState();
   const dispatch = useContext(UserInfoDispatch);
   const navigate = useNavigate();
+  const { warn } = useToast();
   const { inputs, handleChange } = useTextInputs<{
     nickname: string;
     password: string;
@@ -28,11 +30,14 @@ function SignUp() {
     },
   });
 
+  const isFormSubmitable =
+    inputs.nickname && inputs.password && selectedRegion?.id;
+
   const signupWithGithub = async () => {
     const userInfo = { ...githubUser, regionId: selectedRegion.id };
 
-    const { data } = await credentialRemote.post('auth/signup', {
-      user: userInfo,
+    const { data } = await credentialRemote.post('/auth/signup', {
+      ...userInfo,
     });
 
     dispatch({
@@ -68,6 +73,11 @@ function SignUp() {
 
   const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!isFormSubmitable) {
+      warn('필수값을 모두 입력해주세요.');
+      return;
+    }
 
     if (githubUser) {
       await signupWithGithub();
@@ -110,7 +120,9 @@ function SignUp() {
           selectedRegion={selectedRegion}
           setSelectedRegion={setSelectedRegion}
         />
-        <button type="submit">회원가입</button>
+        <button disabled={!isFormSubmitable} type="submit">
+          회원가입
+        </button>
       </StyledSignupForm>
     </>
   );
@@ -123,14 +135,14 @@ const StyledSignupForm = styled.form`
   flex-direction: column;
   padding: 1rem;
 
-  input {
-    margin-bottom: 1rem;
-  }
-
   button[type='submit'] {
     padding: 0.625rem 0;
     background-color: ${colors.primary};
     color: ${colors.white};
     border-radius: 8px;
+  }
+
+  button:disabled {
+    opacity: 0.5;
   }
 `;

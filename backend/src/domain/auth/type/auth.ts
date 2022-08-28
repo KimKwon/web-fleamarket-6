@@ -17,6 +17,17 @@ export class SignupInfo extends SigninInfo {
   regionId: number;
 }
 
+export class OAuthSignupInfo {
+  @IsNumber()
+  githubUserId: number;
+
+  @IsNumber()
+  regionId: number;
+
+  @IsNumber()
+  nickname: string;
+}
+
 export class UserInfo extends SigninInfo {
   @IsString()
   regionName: string;

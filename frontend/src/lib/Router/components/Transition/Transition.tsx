@@ -1,4 +1,4 @@
-import styled, { css, keyframes } from 'styled-components';
+import styled, { css, keyframes, ThemeProvider } from 'styled-components';
 import { PropsWithChildren } from 'react';
 import useTransitionHelper, { RouteInfo } from './useTransitionHelper';
 import useHistoryStack from './useHistoryStack';
@@ -15,19 +15,20 @@ function Transition({ children }: PropsWithChildren): JSX.Element {
   };
 
   return (
-    <StyledAnimatingBox
-      shouldMoveToBack={shouldMoveToBack}
-      isAnimating={isAnimationReady}
-      onAnimationEnd={handleAnimationEnd}
-    >
-      {isAnimationReady && shouldMoveToBack && (
-        <Wrapper>{renderRouteElement(nextRoute)}</Wrapper>
-      )}
-      <Wrapper key={currentRoute.locationInfo?.pathname}>
-        {renderRouteElement(currentRoute)}
-      </Wrapper>
-      {isAnimationReady && <Wrapper>{renderRouteElement(nextRoute)}</Wrapper>}
-    </StyledAnimatingBox>
+    <ThemeProvider theme={{ isAnimating: isAnimationReady }}>
+      <StyledAnimatingBox
+        shouldMoveToBack={shouldMoveToBack}
+        onAnimationEnd={handleAnimationEnd}
+      >
+        {isAnimationReady && shouldMoveToBack && (
+          <Wrapper>{renderRouteElement(nextRoute)}</Wrapper>
+        )}
+        <Wrapper key={currentRoute.locationInfo?.pathname}>
+          {renderRouteElement(currentRoute)}
+        </Wrapper>
+        {isAnimationReady && <Wrapper>{renderRouteElement(nextRoute)}</Wrapper>}
+      </StyledAnimatingBox>
+    </ThemeProvider>
   );
 }
 
@@ -59,7 +60,7 @@ const StyledAnimatingBox = styled.div<{
   shouldMoveToBack: boolean;
   isAnimating?: boolean;
 }>`
-  ${({ isAnimating, shouldMoveToBack }) =>
+  ${({ theme: { isAnimating }, shouldMoveToBack }) =>
     isAnimating &&
     css`
       display: flex;

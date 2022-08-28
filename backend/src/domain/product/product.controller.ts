@@ -7,9 +7,11 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { AuthService } from '../auth/auth.service';
 import { ProductService } from './product.service';
@@ -70,11 +72,18 @@ export class ProductController {
   }
 
   @Get(':productId')
-  getProductById(
+  async getProductById(
     @Param()
     { productId }: ProductParam,
+    @Req() request: Request,
   ) {
-    return this.productService.getProductById(productId);
+    const cookies = request.cookies;
+    const token = cookies.user_token;
+    const userInfo = await this.authService.getUserInfo(token);
+    return this.productService.getProductById(
+      productId,
+      userInfo ? userInfo['id'] : undefined,
+    );
   }
 
   @Get()

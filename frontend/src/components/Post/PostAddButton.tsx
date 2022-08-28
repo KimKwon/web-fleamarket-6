@@ -17,6 +17,7 @@ function PostAddButton() {
 export default PostAddButton;
 
 const StyledButton = styled.button`
+  display: ${({ theme }) => (theme.isAnimating ? 'none' : 'block')};
   position: fixed;
   bottom: 1rem;
   right: 1rem;

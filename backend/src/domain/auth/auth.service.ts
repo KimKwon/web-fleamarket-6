@@ -5,7 +5,7 @@ import { MySQLService } from 'src/config/mysql/mysql.service';
 import { Pool, ResultSetHeader } from 'mysql2/promise';
 import formatData from 'src/utils/format';
 import * as jwt from 'jsonwebtoken';
-import { SigninInfo, SignupInfo, UserInfo } from './type/auth';
+import { OAuthSignupInfo, SigninInfo, SignupInfo, UserInfo } from './type/auth';
 import { JWT_ERROR_MAP } from 'src/constants/auth';
 
 @Injectable()
@@ -101,7 +101,7 @@ export class AuthService {
     }
   }
 
-  async signup(user: SignupInfo) {
+  async signup(user: SignupInfo | OAuthSignupInfo) {
     const [res] = await this.pool.execute(
       `INSERT INTO USER (${Object.keys(user).join()})
           SELECT ${Object.values(user)
@@ -136,7 +136,8 @@ export class AuthService {
     return res[0];
   }
 
-  async getUserInfo(token: string) {
+  async getUserInfo(token?: string) {
+    if (!token) return null;
     try {
       const decoded = await new Promise((resolve, reject) => {
         jwt.verify(

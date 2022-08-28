@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { CheckIcon, ImageIcon, MapPinIcon } from '../../assets/icons/icons';
@@ -10,6 +11,7 @@ import {
 } from '../../constants/limit';
 import { UserInfoContext } from '../../context/UserInfoContext';
 import useQuery from '../../hooks/useQuery';
+import useToast from '../../hooks/useToast';
 import { remote } from '../../lib/api';
 import memoryCache from '../../lib/MemoryCache';
 import { useNavigate, useSearchParams } from '../../lib/Router';
@@ -32,6 +34,7 @@ function PostManager() {
   const searchParams = useSearchParams();
   const productId = searchParams('productId');
   const navigate = useNavigate();
+  const { warn, notice, error } = useToast();
 
   const { data: categories } = useQuery<CategoryType[]>(
     ['category'],
@@ -88,7 +91,7 @@ function PostManager() {
     }
 
     if (files.length + productInputs.thumbnails.length > 10) {
-      alert('사진을 10개 넘게 올릴 수 없습니다.');
+      warn('사진을 10개 넘게 올릴 수 없습니다.');
       return;
     }
 
@@ -110,7 +113,7 @@ function PostManager() {
     event.preventDefault();
 
     if (!isFormSubmitable) {
-      alert('모든 필수 값이 입력되어야 합니다.');
+      warn('모든 필수 값이 입력되어야 합니다.');
       return;
     }
 
@@ -128,14 +131,28 @@ function PostManager() {
       ? `/product/${prevProductDetail.id}`
       : '/product/write';
 
-    const { data } = await submitMethod(submitUrl, post);
-    const productId = prevProductDetail?.id || data?.productId;
-    const returnUrl = isEditMode ? -1 : `/post/${productId}`;
+    try {
+      const response = await submitMethod(submitUrl, post);
 
-    memoryCache.removeCacheData('postDetail' + productId);
-    navigate(returnUrl, {
-      replace: true,
-    });
+      const productId = prevProductDetail?.id || response?.data?.productId;
+      const returnUrl = isEditMode ? -1 : `/post/${productId}`;
+
+      memoryCache.removeCacheData('postDetail' + productId);
+      notice(isEditMode ? '수정되었어요.' : '업로드되었어요.');
+
+      navigate(returnUrl, {
+        replace: true,
+      });
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        if (e.response?.status === 422) {
+          error('상품을 수정해주세요.');
+          return;
+        }
+
+        error('문제가 생겼어요. 다시 시도해주세요.');
+      }
+    }
   };
 
   const handleDeleteThumbnail = (url: string) => {
@@ -167,13 +184,8 @@ function PostManager() {
       return;
     }
 
-    const { name, description, categoryId, thumbnail, price } =
+    const { name, description, categoryId, thumbnails, price } =
       prevProductDetail;
-
-    const thumbnails =
-      typeof thumbnail !== 'string'
-        ? ['http://source.unsplash.com/random']
-        : [thumbnail];
 
     setProductInputs({
       title: name,
@@ -202,7 +214,7 @@ function PostManager() {
         <div className="image-section">
           <label htmlFor="post_image" className="image-upload">
             <ImageIcon />
-            <span>{`${thumbnails.length}/10`}</span>
+            <span>{`${thumbnails?.length}/10`}</span>
           </label>
           <input
             id="post_image"

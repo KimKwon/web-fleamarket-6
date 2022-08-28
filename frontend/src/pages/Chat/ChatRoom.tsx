@@ -189,8 +189,16 @@ const StyledChatForm = styled.form`
   background-color: ${colors.offWhite};
   border-top: 1px solid ${colors.gray200};
 
+  & > div {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+  }
+
   input {
     flex: 1;
+    margin-bottom: 0;
   }
 
   button[type='submit'] {

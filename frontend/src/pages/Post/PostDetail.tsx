@@ -7,6 +7,7 @@ import { UserInfoContext } from '../../context/UserInfoContext';
 import useManageDropdown from '../../hooks/useManageDropdown';
 import useProductLike from '../../hooks/useProductLike';
 import useQuery from '../../hooks/useQuery';
+import useToast from '../../hooks/useToast';
 import { remote } from '../../lib/api';
 import { useNavigate, usePathParams } from '../../lib/Router';
 import colors from '../../styles/colors';
@@ -22,6 +23,7 @@ import { parseDateFromNow } from '../../utils/parse';
 
 function PostDetail() {
   const navigate = useNavigate();
+  const { warn } = useToast();
   const { userId } = useContext(UserInfoContext);
   const { productId } = usePathParams();
   const { authorOnlyDropDown } = useManageDropdown(Number(productId));
@@ -37,7 +39,7 @@ function PostDetail() {
 
   const { optimisticLikeInfo, handleLikeProduct } = useProductLike(
     { isLiked: Boolean(postDetail?.isLiked), likeCount: 0 },
-    +productId,
+    productId ? +productId : 0,
     userId,
   );
 
@@ -72,6 +74,11 @@ function PostDetail() {
     : '문의하기';
 
   const handleRequestChat = async () => {
+    if (!userId) {
+      warn('로그인이 필요해요');
+      return;
+    }
+
     if (isAuthorOfProduct) {
       navigate(`/my?tab=1&userId=${userId}&productId=${productId}`);
       return;

@@ -52,7 +52,7 @@ export class MySQLService implements OnModuleInit {
       name VARCHAR(20) NOT NULL,
       price DECIMAL(10, 0) NOT NULL,
       createdAt TIMESTAMP NOT NULL,
-      deletedAt TIMESTAMP NOT NULL,
+      deletedAt TIMESTAMP,
       isSold TINYINT(1) NOT NULL,
       description VARCHAR(255) NOT NULL,
       viewCount int,

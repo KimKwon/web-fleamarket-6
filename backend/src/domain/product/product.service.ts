@@ -29,14 +29,18 @@ export class ProductService {
     return Boolean(result[0]);
   }
 
-  async getProductById(productId: number) {
+  async getProductById(productId: number, userId?: number) {
     const isExist = await this.isProductExist(productId);
     if (!isExist) {
       throw new HttpException(`Cannot found Product.`, 404);
     }
 
+    const ISLIKED_SUBQUERY = `EXISTS (SELECT * FROM USER_LIKE_PRODUCT where userId = ${
+      userId ?? -1
+    } and productId = P.id) as isLiked`;
+
     const [result] = await this.pool.query(/*sql*/ `
-      SELECT P.*, UR.nickname as authorName, COUNT(ULP.id) as likeCount, C.name as categoryName, regionName
+      SELECT P.*, UR.nickname as authorName, COUNT(ULP.id) as likeCount, C.name as categoryName, regionName, ${ISLIKED_SUBQUERY}
       FROM PRODUCT as P
       INNER JOIN CATEGORY as C ON C.id = P.categoryId
       INNER JOIN (SELECT U.nickname, U.id, R.name as regionName FROM USER as U INNER JOIN REGION as R) AS UR ON P.authorId = UR.id

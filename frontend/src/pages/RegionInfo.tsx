@@ -4,6 +4,7 @@ import withCheckLogin from '../components/HOC/withCheckLogin';
 import PageHeader from '../components/PageHeader/PageHeader';
 import RegionSearchContainer from '../components/RegionSearchContainer';
 import { UserInfoContext, UserInfoDispatch } from '../context/UserInfoContext';
+import useToast from '../hooks/useToast';
 import { remote } from '../lib/api';
 import { useNavigate } from '../lib/Router';
 import colors from '../styles/colors';
@@ -17,11 +18,17 @@ function RegionInfo() {
     ...initialRegionValue,
   });
   const navigate = useNavigate();
+  const { warn } = useToast();
 
   const handleChangeRegion = async (
     event: React.FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
+
+    if (!selectedRegion?.id) {
+      warn('지역을 선택해주세요.');
+      return;
+    }
 
     await remote.patch('/region', {
       userId: userInfo.userId,

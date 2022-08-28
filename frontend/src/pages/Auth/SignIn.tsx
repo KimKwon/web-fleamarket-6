@@ -11,10 +11,13 @@ import colors from '../../styles/colors';
 import { textMedium, textSmall } from '../../styles/fonts';
 import loginBanner from '../../assets/login-banner.png';
 import { appearFromBottom, bannerAnimation } from '../../styles/keyframes';
+import useToast from '../../hooks/useToast';
+import axios from 'axios';
 
 function SignIn() {
   const dispatch = useContext(UserInfoDispatch);
   const navigate = useNavigate();
+  const { error, warn, notice } = useToast();
   const { inputs, handleChange } = useTextInputs<{
     nickname: string;
     password: string;
@@ -31,31 +34,39 @@ function SignIn() {
     event.preventDefault();
 
     if (!(inputs.nickname && inputs.password)) {
+      warn('닉네임과 비밀번호를 입력해주세요.');
       return;
     }
 
-    const { data } = await credentialRemote.post('auth/signin', {
-      nickname: inputs.nickname,
-      password: inputs.password,
-    });
+    try {
+      const response = await credentialRemote.post('auth/signin', {
+        nickname: inputs.nickname,
+        password: inputs.password,
+      });
 
-    if (!data) {
-      alert('로그인에 실패했습니다.');
+      const { data } = response;
 
-      return;
+      dispatch({
+        type: 'USERINFO/SET_USER',
+        payload: {
+          userId: data.id,
+          name: data.nickname,
+          region: data.regionName,
+          regionId: data.regionId,
+        },
+      });
+
+      notice('로그인에 성공했어요.');
+      navigate('/');
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        if (e.response?.status === 401) {
+          error('닉네임 혹은 비밀번호가 잘못되었어요.');
+          return;
+        }
+      }
+      error('로그인에 실패했습니다.');
     }
-
-    dispatch({
-      type: 'USERINFO/SET_USER',
-      payload: {
-        userId: data.id,
-        name: data.nickname,
-        region: data.regionName,
-        regionId: data.regionId,
-      },
-    });
-
-    navigate('/');
   };
 
   return (
@@ -98,7 +109,12 @@ function SignIn() {
         )}
         <StyledBasicLoginButton
           type="submit"
-          onClick={() => setIsBasicInputOpen((prev) => !prev)}
+          onClick={(e) => {
+            if (!isBasicInputOpen) {
+              e.preventDefault();
+              setIsBasicInputOpen((prev) => !prev);
+            }
+          }}
         >
           플리마켓 로그인
         </StyledBasicLoginButton>
@@ -119,10 +135,6 @@ const StyledSignInForm = styled.form`
   padding: 0 1rem;
   padding-top: 3rem;
   text-align: center;
-
-  input {
-    margin-bottom: 1rem;
-  }
 
   .signup-link {
     margin-top: 15px;

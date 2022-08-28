@@ -2,7 +2,7 @@ import { Controller, Post, Body, Res, Get, Req, Param } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { MAX_COOKIE_AGE, TOKEN_NAME } from 'src/constants/auth';
 import { AuthService } from './auth.service';
-import { Code, SigninInfo, SignupInfo } from './type/auth';
+import { Code, OAuthSignupInfo, SigninInfo, SignupInfo } from './type/auth';
 
 @Controller('auth')
 export class AuthController {
@@ -34,7 +34,7 @@ export class AuthController {
 
   @Post('signup')
   async signup(
-    @Body() user: SignupInfo,
+    @Body() user: SignupInfo | OAuthSignupInfo,
     @Res({ passthrough: true }) response: Response,
   ) {
     const lastId = await this.authService.signup(user);
