@@ -27,25 +27,6 @@
 
 <br>
 
-
-## Tech Flow
-
-<div align="center">
-  <img src="https://user-images.githubusercontent.com/22493971/187073861-c68f2418-5c45-4bfc-9619-8acebac76af8.png" width="860" />
-</div>
-
-
----
-
-## ERD
-
-<div align="center">
-  <img src="https://user-images.githubusercontent.com/22493971/187073850-d82c65f4-6f77-4f5b-ae76-6dcf8d120e8f.png" width="450" />
-</div>
-
-
----
-
 ## 뭐로 만드신거죠?
 
 ### Client
@@ -78,7 +59,93 @@
 
 ## 어떻게 시작하나요?
 
-위키의 [사전세팅 (준비중)]()을 참고해주세요!
+위키의 [사전세팅](https://github.com/woowa-techcamp-2022/web-fleamarket-6/wiki/Prerequisite)을 참고해주세요!
 
 
 ---
+
+
+## 구현한 기능들
+
+
+<div style="display: flex;justify-content: space-between; margin-bottom: 3rem;">
+    <div>
+        <h3>
+            페이지 라우팅간 애니메이션
+        </h3>
+        <img src="https://user-images.githubusercontent.com/22493971/187088426-324d0cfe-0c31-42fb-be17-1080586095af.gif" width="300" />
+        <li>
+            history의 push, pop 이벤트에 따라 좌우 트랜지션 애니메이션이 나타납니다.
+        </li>
+    </div>
+    <div>
+        <h3>
+            홈페이지
+        </h3>
+        <img src="https://user-images.githubusercontent.com/22493971/187348235-3a461643-c89e-4725-ba28-59bef6f72a71.gif" width="300" />
+        <li>유저 동작에 따라 각 페이지로 이동이 가능합니다.</li>
+        <li>상품들은 스크롤을 끝까지 내리면 무한 스크롤 형태로 새로운 컨텐츠가 로드됩니다.</li>
+        <li>
+            로그인 중일 경우 상품에 하트를 눌러 관심목록으로 등록할 수 있습니다.</li>
+        <li>
+            카테고리 페이지로 이동 후 선택할 경우 카테고리에 따라 상품이 필터링됩니다.
+        </li>
+    </div>    
+</div>
+
+---
+
+<div style="display: flex;justify-content: space-between; margin-bottom: 3rem;gap: 1rem;">
+    <div>
+        <h3>
+            Github OAuth
+        </h3>
+        <img src="https://i.imgur.com/iHJRbiX.gif" width="300"  />
+        <li>깃허브 아이디를 통해 OAuth 로그인이 가능합니다.</li>
+    </div>
+    <div>    
+        <h3>
+            지역 변경하기 
+        </h3>
+        <img src="https://i.imgur.com/1fy5nsu.gif" width="300" />
+        <li>로그인 중일 경우 헤더 중앙 버튼을 클릭해 지역 변경하기 페이지로 이동할 수 있습니다.</li>
+        <li>지역 변경하기 페이지는 검색 기능을 제공합니다.</li> 
+    </div>
+</div>
+
+---
+
+<div>
+    <h3>
+    글쓰기
+</h3>
+
+<img src="https://i.imgur.com/K4ycCek.gif" width="300" />
+
+<li>로그인 중일 경우 하단의 글쓰기 버튼을 통해 글쓰기 페이지로 이동합니다.</li>
+<li>사진과 그 외의 인풋들을 입력하고 새로운 글을 등록할 수 있습니다.</li>    
+</div>
+
+---
+
+<h3>
+    마이페이지 (판매목록/채팅목록/관심목록)
+</h3>
+
+<div align="center">
+    <img src="https://i.imgur.com/ufOBLOK.png" width="200" />    
+    <img src="https://i.imgur.com/nJ8NQy4.png" width="200" />
+    <img src="https://i.imgur.com/Jj5STUX.png" width="200" />
+</div>
+
+<li>해당 유저가 업로드한 상품 목록이 나타납니다.</li>
+<li>해당 유저가 참여중인 채팅방의 목록이 나타납니다.</li>
+<li>해당 유저가 좋아요를 누른 상품의 목록이 나타납니다.</li>
+
+---
+
+<h3>
+    채팅기능
+</h3>
+
+<img src="https://i.imgur.com/gMl8YmX.gif" />
